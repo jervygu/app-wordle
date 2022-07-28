@@ -14,7 +14,11 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let answer = "after"
+    let answers = [
+        "later", "bacon", "fifth", "queen", "sleep"
+    ]
+    
+    var answer = ""
     
     private var guesses: [[Character?]] = Array(
         repeating: Array(
@@ -29,6 +33,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        answer = answers.randomElement() ?? "apple"
+        print(answer)
         view.backgroundColor = .systemGray6
         
         addChildren()
@@ -69,7 +75,7 @@ class ViewController: UIViewController {
 
 extension ViewController: KeyBoardViewControllerDelegate {
     func keyBoardViewControllerDelegate(_ vc: KeyBoardViewController, didTapKey letter: Character) {
-        print("\(letter) tapped")
+        print(letter)
         
         // update guesses
         var stop = false
@@ -95,5 +101,30 @@ extension ViewController: KeyBoardViewControllerDelegate {
 extension ViewController: BoardViewControllerDataSource {
     var currentGuesses: [[Character?]] {
         return guesses
+    }
+    
+    func boxColor(at indexPath: IndexPath) -> UIColor? {
+        // return .systemOrange
+        
+        let rowIndex = indexPath.section
+        let count = guesses[rowIndex].compactMap({ $0 }).count
+        
+        guard count == 5 else {
+            return nil
+        }
+        
+        let indexedAnswer = Array(answer)
+        
+        guard let letter  = guesses[indexPath.section][indexPath.row],
+              indexedAnswer.contains(letter) else {
+            return nil
+        }
+        
+        if indexedAnswer[indexPath.row] == letter {
+            return .systemGreen
+        }
+        
+        return .systemOrange
+        
     }
 }
